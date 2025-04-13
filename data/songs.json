@@ -1,0 +1,37 @@
+{
+    "songs": [
+        {
+            "id": 1,
+            "title": "GIÓ TẦNG NÀO GẶP MÂY TẦNG ẤY - THÀNH ĐẠT x NGUYỄN HOÀNG PHONG ( OFFICIAL MV )",
+            "artist": "Thành Đạt",
+            "album": "SAD",
+            "dateAdded": "2025-04-12",
+            "duration": 311,
+            "liked": false,
+            "coverUrl": "images/albums-cover/gio_tang_nao_gap_may_tang_ay.webp",
+            "audioUrl": "musics/GIÓ TẦNG NÀO GẶP MÂY TẦNG ẤY - THÀNH ĐẠT x NGUYỄN HOÀNG PHONG ( OFFICIAL MV ) - THÀNH ĐẠT MUSIC.mp3"
+        },
+        {
+            "id": 2,
+            "title": "PHIM BA NGƯỜI - NGUYỄN VĨ  OFFICIAL MUSIC VIDEO",
+            "artist": "NGUYỄN VĨ",
+            "album": "SAD",
+            "dateAdded": "2025-04-12",
+            "duration": 318,
+            "liked": false,
+            "coverUrl": "images/albums-cover/phim_ba_nguoi.jpg",
+            "audioUrl": "musics/PHIM BA NGƯỜI - NGUYỄN VĨ  OFFICIAL MUSIC VIDEO - Nguyễn Vĩ OFFICIAL.mp3"
+        },
+        {
+            "id": 3,
+            "title": "YÊU KHÁC THƯƠNG HẠI - THÀNH ĐẠT - THÀNH ĐẠT MUSIC",
+            "artist": "THÀNH ĐẠT",
+            "album": "SAD",
+            "dateAdded": "2025-04-12",
+            "duration": 378,
+            "liked": false,
+            "coverUrl": "images/albums-cover/yeu_khac_thuong_hai.webp",
+            "audioUrl": "musics/YÊU KHÁC THƯƠNG HẠI - THÀNH ĐẠT - THÀNH ĐẠT MUSIC.mp3"
+        }
+    ]
+}

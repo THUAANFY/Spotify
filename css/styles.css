@@ -1,0 +1,646 @@
+/* Base styles */
+body {
+  background: linear-gradient(to bottom, #535353, #191414);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: "Montserrat", sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Remove button outlines */
+button:focus,
+a:focus,
+[role="button"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Special styling for search input */
+.search-input {
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border: 2px solid #1db954;
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+  background-color: rgba(40, 40, 40, 0.8) !important;
+}
+
+/* Ensure images maintain aspect ratio */
+img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fix circular buttons */
+.rounded-full {
+  aspect-ratio: 1 / 1;
+}
+
+/* Ensure play button icon is centered */
+#play-button .fa-play {
+  margin-left: 2px;
+}
+
+#play-button .fa-pause {
+  margin: 0;
+}
+
+/* Increase clickable area for control buttons */
+.player-controls button {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+/* Fix for mobile sidebar toggle button */
+#mobile-sidebar-toggle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Fix for song row images */
+.song-row img {
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fix for lyrics modal album cover */
+#lyrics-cover {
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Increase clickable area for player controls */
+#lyrics-button,
+#queue-button,
+#devices-button,
+#mute-button,
+#fullscreen-button {
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fix for volume slider */
+#volume-container {
+  margin: 0 8px;
+}
+
+/* Song row styles */
+.song-row {
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.song-row::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: width 0.3s ease;
+}
+
+.song-row:hover::after {
+  width: 100%;
+}
+
+.song-row:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.song-row:hover .song-number {
+  display: none;
+}
+
+.song-row:hover .play-icon {
+  display: inline-block;
+}
+
+.play-icon {
+  display: none;
+}
+
+/* Like button effect */
+.like-button {
+  transition: all 0.3s ease;
+}
+
+.like-button.active {
+  color: #1db954;
+  transform: scale(1.1);
+}
+
+.like-button:hover {
+  transform: scale(1.2);
+}
+
+/* Play button toggle */
+.fa-pause {
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+/* Currently playing song */
+.song-row.playing {
+  background-color: rgba(29, 185, 84, 0.2);
+  box-shadow: 0 0 10px rgba(29, 185, 84, 0.1);
+}
+
+.song-row.playing .song-title {
+  color: #1db954;
+  font-weight: 600;
+}
+
+/* Progress bar and volume slider */
+#progress-bar,
+#volume-bar {
+  transition: width 0.1s linear;
+}
+
+#progress-handle,
+#volume-handle {
+  transform: translateY(-50%) translateX(-50%);
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Shuffle and repeat active states */
+.control-active {
+  color: #1db954 !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.5);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(29, 185, 84, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(29, 185, 84, 0.8);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Song row animations */
+.song-row {
+  opacity: 0;
+  animation: slideUp 0.3s ease forwards;
+}
+
+/* Staggered animation for song rows */
+.song-row:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.song-row:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.song-row:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.song-row:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.song-row:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.song-row:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.song-row:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.song-row:nth-child(8) {
+  animation-delay: 0.4s;
+}
+.song-row:nth-child(9) {
+  animation-delay: 0.45s;
+}
+.song-row:nth-child(10) {
+  animation-delay: 0.5s;
+}
+
+/* Notification toast */
+#notification-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Mobile sidebar */
+#mobile-sidebar.open {
+  transform: translateX(0);
+}
+
+/* Improved responsive adjustments */
+@media (max-width: 768px) {
+  .player-controls {
+    width: 100%;
+  }
+
+  #current-cover {
+    width: 40px;
+    height: 40px;
+  }
+
+  #play-button {
+    transform: scale(0.9);
+  }
+
+  .song-row td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  /* Hide less important controls on smaller screens */
+  #lyrics-button,
+  #queue-button,
+  #devices-button {
+    display: none !important;
+  }
+
+  /* Ensure player controls have enough space */
+  .player-controls {
+    gap: 8px;
+  }
+
+  /* Adjust volume slider width */
+  #volume-container {
+    width: 60px;
+  }
+}
+
+@media (max-width: 640px) {
+  #current-title,
+  #current-artist {
+    max-width: 80px;
+  }
+
+  #like-current {
+    display: none;
+  }
+
+  .song-row td:nth-child(4),
+  .song-row td:nth-child(5) {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* Further adjustments for very small screens */
+  #fullscreen-button {
+    display: none !important;
+  }
+
+  #volume-container {
+    width: 40px;
+  }
+
+  /* Reduce padding in player area */
+  .h-20 {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  /* Make sure player controls fit */
+  .player-controls button {
+    padding: 4px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  /* Ensure the player bottom bar is properly sized */
+  .h-20 {
+    height: 70px !important;
+  }
+
+  /* Stack player controls if needed */
+  .player-controls {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Adjust song info area */
+  /* Sử dụng ID thay vì class để tránh lỗi với dấu / */
+  #song-info-container {
+    width: 33% !important;
+  }
+
+  /* Make sure controls have enough space */
+  #player-controls-container {
+    width: 67% !important;
+  }
+
+  /* Hide volume controls on very small screens */
+  #volume-controls-container {
+    display: none !important;
+  }
+}
+
+/* Loading animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Hover effects */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Card effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Glassmorphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+/* Enhanced glassmorphism */
+.glass-morphism {
+  background: rgba(30, 30, 30, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Album cover effects */
+.album-cover {
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.album-cover:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Lyrics modal animation */
+#lyrics-modal {
+  transition: opacity 0.3s ease;
+}
+
+#lyrics-modal.show {
+  opacity: 1;
+}
+
+/* Fullscreen mode */
+.fullscreen-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background: #121212;
+}
+
+/* Wave animation for currently playing */
+.wave-animation {
+  display: flex;
+  align-items: flex-end;
+  height: 16px;
+  gap: 2px;
+}
+
+.wave-animation span {
+  width: 2px;
+  background: #1db954;
+  border-radius: 1px;
+  animation: wave 1.2s infinite ease-in-out;
+}
+
+.wave-animation span:nth-child(1) {
+  height: 8px;
+  animation-delay: 0s;
+}
+.wave-animation span:nth-child(2) {
+  height: 16px;
+  animation-delay: 0.2s;
+}
+.wave-animation span:nth-child(3) {
+  height: 10px;
+  animation-delay: 0.4s;
+}
+.wave-animation span:nth-child(4) {
+  height: 14px;
+  animation-delay: 0.6s;
+}
+
+/* Glow effect for active elements */
+.glow-effect {
+  animation: glow 2s infinite;
+}
+
+/* Enhanced hover effects for buttons */
+button:active {
+  transform: scale(0.95);
+}
+
+/* Improved mobile sidebar */
+@media (max-width: 768px) {
+  #mobile-sidebar {
+    width: 100%;
+  }
+
+  #mobile-sidebar.open {
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Enhanced notification toast */
+#notification-toast {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(to right, #1db954, #4ade80);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Shimmer effect */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Neon glow effect */
+.neon-glow {
+  box-shadow: 0 0 5px #1db954, 0 0 10px #1db954, 0 0 15px #1db954;
+  transition: all 0.3s ease;
+}
+
+.neon-glow:hover {
+  box-shadow: 0 0 10px #1db954, 0 0 20px #1db954, 0 0 30px #1db954;
+}
+
+/* Enhanced buttons */
+.enhanced-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.enhanced-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.enhanced-button:hover::after {
+  opacity: 1;
+}
+
+.enhanced-button:active::after {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Particle background */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}

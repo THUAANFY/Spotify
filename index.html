@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify - Trình phát nhạc</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'spotify-green': '#1DB954',
+                        'spotify-black': '#121212',
+                        'spotify-dark': '#181818',
+                        'spotify-light': '#282828',
+                        'spotify-lightest': '#333333',
+                        'spotify-hover': '#2a2a2a'
+                    },
+                    fontFamily: {
+                        'spotify': ['Montserrat', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        }
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-b from-spotify-dark/90 to-spotify-black text-white font-spotify transition-colors duration-500">
+    <!-- Audio Element (Hidden) -->
+    <audio id="audio-player"></audio>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-spotify-black z-50 flex items-center justify-center">
+        <div class="flex flex-col items-center">
+            <div class="w-20 h-20 relative">
+                <div class="w-20 h-20 rounded-full border-t-2 border-l-2 border-spotify-green animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i class="fa-brands fa-spotify text-spotify-green text-3xl animate-pulse-slow"></i>
+                </div>
+            </div>
+            <p class="mt-6 text-spotify-green font-medium animate-pulse">Đang tải...</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification-toast" class="fixed top-4 right-4 z-50 transform transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none">
+        <div class="bg-spotify-dark border border-spotify-light shadow-lg rounded-lg p-4 flex items-center gap-3 backdrop-blur-md">
+            <i id="notification-icon" class="fa-solid fa-circle-info text-spotify-green"></i>
+            <p id="notification-message" class="text-sm font-medium">Notification message</p>
+        </div>
+    </div>
+
+    <div class="flex flex-col h-screen">
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <div id="sidebar" class="hidden md:block w-64 lg:w-72 bg-black p-6 overflow-y-auto transition-all duration-300 ease-in-out">
+                <div class="mb-8">
+                    <div class="flex items-center mb-8">
+                        <i class="fa-brands fa-spotify text-white text-3xl mr-2"></i>
+                        <span class="text-xl font-bold">Spotify</span>
+                    </div>
+                    <nav class="space-y-4">
+                        <a href="#" class="flex items-center gap-4 text-white hover:text-spotify-green transition-colors duration-200 py-2 group">
+                            <div class="relative">
+                                <i class="fa-solid fa-house text-xl"></i>
+                                <div class="absolute left-0 bottom-0 w-0 h-0.5 bg-spotify-green transition-all duration-300 group-hover:w-full"></div>
+                            </div>
+                            <span class="font-medium">Trang chủ</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-4 text-gray-400 hover:text-white transition-colors duration-200 py-2 group">
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                                <div class="absolute left-0 bottom-0 w-0 h-0.5 bg-spotify-green transition-all duration-300 group-hover:w-full"></div>
+                            </div>
+                            <span class="font-medium">Tìm kiếm</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-4 text-gray-400 hover:text-white transition-colors duration-200 py-2 group">
+                            <div class="relative">
+                                <i class="fa-solid fa-book text-xl"></i>
+                                <div class="absolute left-0 bottom-0 w-0 h-0.5 bg-spotify-green transition-all duration-300 group-hover:w-full"></div>
+                            </div>
+                            <span class="font-medium">Thư viện</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <div class="bg-spotify-light rounded-lg p-4 hover:bg-spotify-hover transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg">
+                        <a href="#" class="flex items-center gap-4 text-white">
+                            <div class="bg-spotify-green rounded-full w-10 h-10 flex items-center justify-center">
+                                <i class="fa-solid fa-plus text-black"></i>
+                            </div>
+                            <span class="font-medium">Tạo playlist</span>
+                        </a>
+                    </div>
+                    <div class="bg-gradient-to-br from-indigo-700 to-blue-400 rounded-lg p-4 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg">
+                        <a href="#" class="flex items-center gap-4 text-white">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center">
+                                <i class="fa-solid fa-heart text-white"></i>
+                            </div>
+                            <span class="font-medium whitespace-nowrap">Bài hát đã thích</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-8 border-t border-gray-800">
+                    <div class="text-xs text-gray-400 hover:text-white cursor-pointer transition-colors duration-200 py-1">Cookies</div>
+                    <div class="text-xs text-gray-400 hover:text-white cursor-pointer transition-colors duration-200 py-1 mt-2">Quyền riêng tư</div>
+                </div>
+            </div>
+
+            <!-- Mobile Sidebar Toggle -->
+            <div id="mobile-sidebar-toggle" class="md:hidden fixed bottom-24 left-4 z-40 bg-spotify-green rounded-full w-12 h-12 flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200 cursor-pointer neon-glow">
+                <i class="fa-solid fa-bars text-black"></i>
+            </div>
+
+            <!-- Mobile Sidebar -->
+            <div id="mobile-sidebar" class="fixed inset-0 bg-black/95 backdrop-blur-md z-30 transform -translate-x-full transition-transform duration-300 md:hidden">
+                <div class="h-full p-6 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-8">
+                        <div class="flex items-center">
+                            <i class="fa-brands fa-spotify text-white text-3xl mr-2"></i>
+                            <span class="text-xl font-bold">Spotify</span>
+                        </div>
+                        <button id="close-mobile-sidebar" class="text-white p-2 hover:text-spotify-green transition-colors duration-200">
+                            <i class="fa-solid fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <nav class="space-y-6">
+                        <a href="#" class="flex items-center gap-4 text-white hover:text-spotify-green transition-colors duration-200 py-3 group">
+                            <div class="relative">
+                                <i class="fa-solid fa-house text-2xl"></i>
+                                <div class="absolute left-0 bottom-0 w-0 h-0.5 bg-spotify-green transition-all duration-300 group-hover:w-full"></div>
+                            </div>
+                            <span class="font-medium text-lg">Trang chủ</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-4 text-gray-400 hover:text-white transition-colors duration-200 py-3 group">
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+                                <div class="absolute left-0 bottom-0 w-0 h-0.5 bg-spotify-green transition-all duration-300 group-hover:w-full"></div>
+                            </div>
+                            <span class="font-medium text-lg">Tìm kiếm</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-4 text-gray-400 hover:text-white transition-colors duration-200 py-3 group">
+                            <div class="relative">
+                                <i class="fa-solid fa-book text-2xl"></i>
+                                <div class="absolute left-0 bottom-0 w-0 h-0.5 bg-spotify-green transition-all duration-300 group-hover:w-full"></div>
+                            </div>
+                            <span class="font-medium text-lg">Thư viện</span>
+                        </a>
+                    </nav>
+                    <div class="mt-8 space-y-6">
+                        <div class="bg-spotify-light rounded-lg p-4 hover:bg-spotify-hover transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg">
+                            <a href="#" class="flex items-center gap-4 text-white">
+                                <div class="bg-spotify-green rounded-full w-10 h-10 flex items-center justify-center">
+                                    <i class="fa-solid fa-plus text-black"></i>
+                                </div>
+                                <span class="font-medium">Tạo playlist</span>
+                            </a>
+                        </div>
+                        <div class="bg-gradient-to-br from-indigo-700 to-blue-400 rounded-lg p-4 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg">
+                            <a href="#" class="flex items-center gap-4 text-white">
+                                <div class="bg-white/20 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center">
+                                    <i class="fa-solid fa-heart text-white"></i>
+                                </div>
+                                <span class="font-medium">Bài hát đã thích</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-y-auto bg-gradient-to-b from-spotify-dark/80 to-spotify-black">
+                <!-- Header -->
+                <div class="sticky top-0 bg-spotify-black/80 backdrop-blur-md z-10 p-4 flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <button id="back-button" class="bg-black/40 rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/60 transition-colors duration-200">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button id="forward-button" class="bg-black/40 rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/60 transition-colors duration-200">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="bg-black/40 text-white hover:bg-black/60 transition-colors duration-200 rounded-2xl px-4 py-1.5 text-sm font-medium hidden sm:block">
+                            Nâng cấp
+                        </button>
+                        <div class="relative group">
+                            <button class="bg-black/40 rounded-full w-8 h-8 flex items-center justify-center hover:bg-black/60 transition-colors duration-200">
+                                <i class="fa-solid fa-user"></i>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-spotify-light rounded-md shadow-lg z-10 hidden group-hover:block transform origin-top-right transition-all duration-200 scale-95 group-hover:scale-100">
+                                <div class="py-1">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-200 hover:bg-spotify-hover">Tài khoản</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-200 hover:bg-spotify-hover">Hồ sơ</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-200 hover:bg-spotify-hover">Đăng xuất</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 md:p-8">
+                    <!-- Playlist Header -->
+                    <div class="flex flex-col md:flex-row items-center md:items-end gap-6 mb-8 animate-fade-in">
+                        <div class="w-48 h-48 md:w-56 md:h-56 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] group float">
+                            <i class="fa-solid fa-music text-5xl group-hover:scale-110 transition-transform duration-300"></i>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <p class="text-sm text-gray-300 font-medium">PLAYLIST</p>
+                            <h1 class="text-3xl md:text-5xl lg:text-7xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 shimmer">Các bài hát đã lưu</h1>
+                            <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 mt-4 text-sm text-gray-300">
+                                <span class="font-medium">Spotify</span>
+                                <span class="hidden md:inline">•</span>
+                                <span id="playlist-info">0 bài hát</span>
+                                <span class="hidden md:inline">•</span>
+                                <span id="total-duration">00:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="mb-6 animate-slide-up" style="animation-delay: 0.1s;">
+                        <div class="relative max-w-md">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input id="search-input" type="text" placeholder="Tìm kiếm bài hát..." 
+                                class="w-full bg-spotify-light/50 text-white pl-10 pr-4 py-3 rounded-3xl focus:outline-none focus:ring-2 focus:ring-spotify-green focus:border-spotify-green transition-all duration-200 hover:bg-spotify-light/70 search-input">
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center gap-6 mb-6 animate-slide-up" style="animation-delay: 0.2s;">
+                        <button id="play-all-button" class="enhanced-button bg-spotify-green hover:bg-green-400 text-black rounded-full w-14 h-14 flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                            <i class="fa-solid fa-play text-xl ml-0.5"></i>
+                        </button>
+                        <button id="shuffle-button" class="text-gray-400 hover:text-white transition-colors duration-200 p-2 hover:scale-110 transform">
+                            <i class="fa-solid fa-shuffle text-xl"></i>
+                        </button>
+                        <button id="download-button" class="text-gray-400 hover:text-white transition-colors duration-200 p-2 hover:scale-110 transform">
+                            <i class="fa-solid fa-download text-xl"></i>
+                        </button>
+                        <div class="relative group">
+                            <button class="text-gray-400 hover:text-white transition-colors duration-200 p-2 hover:scale-110 transform">
+                                <i class="fa-solid fa-ellipsis text-xl"></i>
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 bg-spotify-light rounded-md shadow-lg z-10 hidden group-hover:block transform origin-top-left transition-all duration-200 scale-95 group-hover:scale-100">
+                                <div class="py-1">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-200 hover:bg-spotify-hover">Thêm vào playlist</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-200 hover:bg-spotify-hover">Chia sẻ</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-200 hover:bg-spotify-hover">Thông tin</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Songs Table -->
+                    <div class="bg-spotify-black/30 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg animate-slide-up" style="animation-delay: 0.3s;">
+                        <table class="w-full text-left text-sm text-gray-300">
+                            <thead class="text-xs uppercase text-gray-400 border-b border-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3">#</th>
+                                    <th class="px-4 py-3">Tiêu đề</th>
+                                    <th class="px-4 py-3 hidden md:table-cell">Album</th>
+                                    <th class="px-4 py-3 hidden lg:table-cell">Ngày thêm</th>
+                                    <th class="px-4 py-3 text-right">
+                                        <i class="fa-regular fa-clock"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="songs-container">
+                                <!-- Songs will be added here by JavaScript -->
+                                <tr class="animate-pulse">
+                                    <td colspan="5" class="px-4 py-3">
+                                        <div class="h-10 bg-spotify-light/50 rounded"></div>
+                                    </td>
+                                </tr>
+                                <tr class="animate-pulse">
+                                    <td colspan="5" class="px-4 py-3">
+                                        <div class="h-10 bg-spotify-light/50 rounded"></div>
+                                    </td>
+                                </tr>
+                                <tr class="animate-pulse">
+                                    <td colspan="5" class="px-4 py-3">
+                                        <div class="h-10 bg-spotify-light/50 rounded"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Player -->
+        <div class="h-20 bg-spotify-dark border-t border-gray-800 px-4 flex items-center justify-between backdrop-blur-md bg-opacity-95 glass-morphism">
+            <!-- Song info -->
+            <div id="song-info-container" class="flex items-center gap-3 w-1/4 min-w-[80px]">
+                <div class="relative group">
+                    <div class="w-14 h-14 rounded-md shadow-md overflow-hidden transform transition-transform duration-300 group-hover:scale-105">
+                        <img id="current-cover" src="images/album-covers/default.jpg" alt="Song cover" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-md">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center text-white"></i>
+                    </div>
+                </div>
+                <div class="truncate">
+                    <div id="current-title" class="font-medium text-sm truncate hover:underline cursor-pointer">Chọn bài hát</div>
+                    <div id="current-artist" class="text-xs text-gray-400 truncate hover:underline cursor-pointer">Spotify</div>
+                </div>
+                <button id="like-current" class="ml-2 text-gray-400 hover:text-white transition-colors duration-200 p-2 hover:scale-110 transform">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
+            </div>
+
+            <!-- Player controls -->
+            <div id="player-controls-container" class="flex flex-col items-center w-2/4 max-w-xl">
+                <div class="flex items-center gap-2 md:gap-4 mb-2 player-controls">
+                    <button id="shuffle-toggle" class="enhanced-button text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[32px] md:min-h-[32px] flex items-center justify-center hover:scale-110 transform">
+                        <i class="fa-solid fa-shuffle text-sm md:text-base"></i>
+                    </button>
+                    <button id="prev-button" class="enhanced-button text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[32px] md:min-h-[32px] flex items-center justify-center hover:scale-110 transform">
+                        <i class="fa-solid fa-backward-step text-sm md:text-base"></i>
+                    </button>
+                    <button id="play-button" class="enhanced-button bg-white rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-black hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg">
+                        <i class="fa-solid fa-play ml-0.5 text-sm md:text-base"></i>
+                    </button>
+                    <button id="next-button" class="enhanced-button text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[32px] md:min-h-[32px] flex items-center justify-center hover:scale-110 transform">
+                        <i class="fa-solid fa-forward-step text-sm md:text-base"></i>
+                    </button>
+                    <button id="repeat-toggle" class="enhanced-button text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[32px] md:min-h-[32px] flex items-center justify-center hover:scale-110 transform">
+                        <i class="fa-solid fa-repeat text-sm md:text-base"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 w-full">
+                    <span id="current-time" class="text-xs text-gray-400 min-w-[30px] md:min-w-[40px] text-right">0:00</span>
+                    <div class="h-1 bg-gray-700 rounded-full flex-1 relative group cursor-pointer glass-morphism">
+                        <div id="progress-bar" class="absolute h-1 bg-white group-hover:bg-spotify-green rounded-full transition-colors duration-200" style="width: 0%"></div>
+                        <div id="progress-handle" class="absolute h-3 w-3 bg-white rounded-full top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="left: 0%"></div>
+                    </div>
+                    <span id="total-time" class="text-xs text-gray-400 min-w-[30px] md:min-w-[40px]">0:00</span>
+                </div>
+            </div>
+
+            <!-- Volume controls -->
+            <div id="volume-controls-container" class="flex items-center gap-1 md:gap-3 w-1/4 justify-end min-w-[60px] md:min-w-[120px]">
+                <button id="lyrics-button" class="hidden md:flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[36px] md:min-h-[36px] hover:scale-110 transform">
+                    <i class="fa-solid fa-microphone text-sm md:text-base"></i>
+                </button>
+                <button id="queue-button" class="hidden md:flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[36px] md:min-h-[36px] hover:scale-110 transform">
+                    <i class="fa-solid fa-list text-sm md:text-base"></i>
+                </button>
+                <button id="devices-button" class="hidden md:flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[36px] md:min-h-[36px] hover:scale-110 transform">
+                    <i class="fa-solid fa-desktop text-sm md:text-base"></i>
+                </button>
+                <button id="mute-button" class="text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[36px] md:min-h-[36px] flex items-center justify-center hover:scale-110 transform">
+                    <i class="fa-solid fa-volume-high text-sm md:text-base"></i>
+                </button>
+                <div id="volume-container" class="w-16 md:w-24 h-1 bg-gray-700 rounded-full relative group cursor-pointer hidden sm:block mx-1 md:mx-2">
+                    <div id="volume-bar" class="absolute h-1 bg-white group-hover:bg-spotify-green rounded-full transition-colors duration-200" style="width: 70%"></div>
+                    <div id="volume-handle" class="absolute h-3 w-3 bg-white rounded-full top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="left: 70%"></div>
+                </div>
+                <button id="fullscreen-button" class="hidden md:flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-200 p-1 md:p-2 min-w-[24px] min-h-[24px] md:min-w-[36px] md:min-h-[36px] hover:scale-110 transform">
+                    <i class="fa-solid fa-expand text-sm md:text-base"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lyrics Modal -->
+    <div id="lyrics-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden opacity-0 transition-opacity duration-300">
+        <div class="h-full flex flex-col">
+            <div class="p-4 flex justify-between items-center">
+                <div class="text-sm text-gray-400">ĐANG PHÁT TỪ PLAYLIST</div>
+                <button id="close-lyrics" class="text-white hover:text-spotify-green transition-colors duration-200 p-2 hover:scale-110 transform">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/2 flex flex-col items-center md:items-start">
+                    <div class="w-64 h-64 rounded-lg shadow-2xl mb-6 overflow-hidden transform hover:scale-105 transition-all duration-300">
+                        <img id="lyrics-cover" src="images/album-covers/default.jpg" alt="Album cover" class="w-full h-full object-cover">
+                    </div>
+                    <div id="lyrics-title" class="text-2xl font-bold">Tên bài hát</div>
+                    <div id="lyrics-artist" class="text-gray-400">Nghệ sĩ</div>
+                </div>
+                <div class="md:w-1/2">
+                    <h2 class="text-2xl font-bold mb-6">Lời bài hát</h2>
+                    <div id="lyrics-content" class="text-gray-300 whitespace-pre-line">
+                        Chưa có lời bài hát.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
